@@ -104,12 +104,22 @@ pa_data <- get_acs(
 
 View(pa_data)
 
+pa_clean <- pa_data %>%
+  mutate(
+    # Remove state name from county names
+    county_name = str_remove(NAME, ", Pennsylvania"),
+    # Remove "County" word
+    county_name = str_remove(county_name, " County")
+  )
+
+View(pa_clean)
+
 
 # Clean the county names to remove state name and "County" 
 # Hint: use mutate() with str_remove()
 
 # Display the first few rows
-
+head(pa_clean)
 ```
 
 ## 2.2 Data Quality Assessment
