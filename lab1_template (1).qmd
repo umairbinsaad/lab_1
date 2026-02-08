@@ -144,6 +144,21 @@ head(pa_clean)
 
 # Create a summary showing count of counties in each reliability category
 # Hint: use count() and mutate() to add percentages
+
+pa_reliability <- pa_clean %>%
+  mutate(
+    # Calculate MOE as percentage of estimate
+    moe_percentage = round((median_household_incomeM / median_household_incomeE) * 100, 2),
+    
+    # Create reliability categories
+    reliability = case_when(
+      moe_percentage < 5 ~ "High Confidence",
+      moe_percentage >= 5 & moe_percentage <= 10 ~ "Moderate",
+      moe_percentage > 10 ~ "Low Confidence"
+    )
+  )
+
+count(pa_reliability, reliability)
 ```
 
 ## 2.3 High Uncertainty Counties
