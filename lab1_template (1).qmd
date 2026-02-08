@@ -58,7 +58,7 @@ If there is a special character like a colon, you need use double quote mark so 
 # Choose your state for analysis - assign it to a variable called my_state
 ```
 
-**State Selection:** I have chosen **[Your State Name]** for this analysis because: [Brief explanation of why you chose this state]
+**State Selection:** I have chosen **[Pennsylvania]** for this analysis because: [Brief explanation of why you chose this state]
 
 # Part 2: County-Level Resource Assessment
 
