@@ -102,6 +102,12 @@ pa_data <- get_acs(
   output = "wide"  # Makes analysis easier
 )
 
+
+# Clean the county names to remove state name and "County" 
+# Hint: use mutate() with str_remove()
+
+# Display the first few rows
+
 View(pa_data)
 
 pa_clean <- pa_data %>%
@@ -115,10 +121,7 @@ pa_clean <- pa_data %>%
 View(pa_clean)
 
 
-# Clean the county names to remove state name and "County" 
-# Hint: use mutate() with str_remove()
 
-# Display the first few rows
 head(pa_clean)
 ```
 
