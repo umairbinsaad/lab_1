@@ -148,7 +148,7 @@ head(pa_clean)
 pa_reliability <- pa_clean %>%
   mutate(
     # Calculate MOE as percentage of estimate
-    moe_percentage = round((median_household_incomeM / median_household_incomeE) * 100, 2),
+    moe_percentage = round((median_household_incomeM / median_incomeE) * 100, 2),
     
     # Create reliability categories
     reliability = case_when(
@@ -175,6 +175,8 @@ count(pa_reliability, reliability)
 
 ```{r high-uncertainty}
 # Create table of top 5 counties by MOE percentage
+top_5_cont <- head(pa_reliability[order(-pa_reliability$moe_percentage), ], 5)
+head (top_5_cont)
 
 # Format as table with kable() - include appropriate column names and caption
 ```
