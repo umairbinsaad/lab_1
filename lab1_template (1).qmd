@@ -90,6 +90,25 @@ print(my_state)
 
 
 ```{r county-data}
+# Write your get_acs() code here
+pa_data <- get_acs(
+  geography = "county",
+  variables = c(
+    median_household_income = "B19013_001",
+    total_population = "B01003_001"
+  ),
+  state = "PA",
+  year = 2022,
+  output = "wide"  # Makes analysis easier
+)
+
+View(pa_data)
+
+
+# Clean the county names to remove state name and "County" 
+# Hint: use mutate() with str_remove()
+
+# Display the first few rows
 
 ```
 
