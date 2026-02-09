@@ -262,15 +262,17 @@ TL <- get_acs(
   output = "wide"  # Makes analysis easier
 )
 View (TL)
+head(TL)
 
 PAGES <- TL %>%
   mutate(
     white_percentage = round((white_aloneE / total_populationE) * 100, 2),
     black_percentage = round((Black_African_AmericanE / total_populationE) * 100, 2),
-    Hispanic_percentage = round((Hispanic_LatinoE / total_populationE) * 100, 2)
+    Hispanic_Latino_percentage = round((Hispanic_LatinoE / total_populationE) * 100, 2)
     )
 
 View(PAGES)
+head(PAGES)
 
 ```
 
@@ -282,10 +284,48 @@ View(PAGES)
 # Find the tract with the highest percentage of Hispanic/Latino residents
 # Hint: use arrange() and slice() to get the top tract
 
+HPHL <- arrange(PAGES, desc(Hispanic_Latino_percentage))
+view(HPHL)
+head(HPHL)
+glimpse(HPHL)
+highest_percentage <- slice(HPHL, 1)
+View(highest_percentage)
+head(highest_percentage)
+
 # Calculate average demographics by county using group_by() and summarize()
+
+HH <- PAGES %>%
+  group_by(NAME)%>%
+  summarise(
+    average_demographics = mean(Hispanic_Latino_percentage, na.rm = TRUE),
+    .groups = 'drop'
+   
+  )
+  
+View(HH )
+head(HH)
+  
+
 # Show: number of tracts, average percentage for each racial/ethnic group
 
+PP <- PAGES %>%
+  group_by(NAME)%>%
+  summarise(
+    average_demographics_Hispanic_Latino = mean(Hispanic_Latino_percentage, na.rm = TRUE),
+    average_demographics_white = mean(white_percentage, na.rm = TRUE),
+    average_demographics_black = mean(black_percentage, na.rm = TRUE))
+  
+View(PP )
+head(PP)
+
 # Create a nicely formatted table of your results using kable()
+
+kable(PP,
+      col.names = c("NAME", "average_demographics_Hispanic_Latino", "average_demographics_white", "average_demographics_black"),
+      caption = "Counties with Highest Income Data Uncertainty",
+      format.args = list(big.mark = ","))
+
+
 ```
 
 # Part 4: Comprehensive Data Quality Evaluation
