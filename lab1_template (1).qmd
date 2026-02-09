@@ -214,10 +214,19 @@ kable(selected_data,
 # Store the selected counties in a variable called selected_counties
 
 # Display the selected counties with their key characteristics
+
 # Show: county name, median income, MOE percentage, reliability category
+
+selected_counties <- filter(MOE, moe > 0.08)
+View(selected_counties)
+head(selected_counties)
+selected_counties1 <- select(top_5_cont, NAME, median_household_incomeM, moe_percentage, reliability)
+View(selected_counties1)
+head(selected_data)
+
 ```
 
-**Comment on the output:** [write something :)]
+**Comment on the output:** [I created the table as per instructions from top5 counties table]
 
 ## 3.2 Tract-Level Demographics
 
