@@ -185,6 +185,14 @@ top_5_cont <- head(MOE[order(-MOE$moe_percentage), ], 5)
 View (top_5_cont)
 head(top_5_cont)
 
+selected_data <- select(top_5_cont, NAME, median_household_incomeM, moe, moe_percentage, reliability)
+View(selected_data)
+head(selected_data)
+
+kable(selected_data,
+      col.names = c("NAME", "median_household_incomeM", "moe", "moe_percentage", "moe"),
+      caption = "Counties with Highest Income Data Uncertainty",
+      format.args = list(big.mark = ","))
 
 
 ```
