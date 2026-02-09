@@ -265,7 +265,11 @@ View (TL)
 
 PAGES <- TL %>%
   mutate(
-    white_percentage = round((white_aloneE / total_populationE) * 100, 2))
+    white_percentage = round((white_aloneE / total_populationE) * 100, 2),
+    black_percentage = round((Black_African_AmericanE / total_populationE) * 100, 2),
+    Hispanic_percentage = round((Hispanic_LatinoE / total_populationE) * 100, 2)
+    )
+
 View(PAGES)
 
 ```
