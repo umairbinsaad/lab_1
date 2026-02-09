@@ -63,7 +63,7 @@ my_state <- get_decennial(geography = "state",
                           year = 2020,
                           sumfile = "dhc")
 print(my_state)
-
+View(my_state)
 ```
 
 **State Selection:** I have chosen **[Pennsylvania]** for this analysis because: [I have chosen this state because I am new here in this state and love it]
@@ -416,7 +416,7 @@ head(II)
 
 ```
 
-**Pattern Analysis:** [Describe any patterns you observe. Do certain types of communities have less reliable data? What might explain this?]
+**Pattern Analysis:** [It is mix type of data results. Every type of community have certain margin of error in data so it can not be deduced that certain type of communities have higher margin of error while some have low margin of error. With respect to counties margin of errors differ definitely]
 
 
 # Part 5: Policy Recommendations
@@ -433,13 +433,19 @@ head(II)
 
 **Executive Summary:**
 
-[Your integrated 4-paragraph summary here]
+[First of all we took P13_001N code in the year 20220 to get ACS data which shows the data of Median age of the total population of all 52 states of US and it shows that Puerto Rico has the highest median age of 45.2 while Utah has the lowest Median age of the total population that is 31.3. After Puerto Rico we have Maine and then New Hampshire in the table list.I have chosen Pennsylvania for this analysis among these states. I have chosen this state because I am new here in this state and love it.
+In the second Part 2 I did County-Level Resource Assessment. First of all Data Retrieval was done. I used get_acs() to retrieve county-level data for Pennsylvania state. I used Geography: county level Variables, median household income (B19013_001) and total population (B01003_001) in the year 2022 to get ACS data. The table shows data with these columns total_populationM, total_populationE, median_household_incomeM, median_household_incomeE. Means figures with margin of errors too. Then as per task I Clean the county names to remove state name and "County" and "Pennsylvania". Results show that Sullivan County, Pennsylvania have highest MOE while Philadelphia County, Pennsylvania has lowest MOE. 
+In Data Quality Assessment I Calculate margin of error percentages and create reliability categories by using this formula =  Calculate MOE percentage: (margin of error / estimate) * 100. So in results High Confidence was seen in 57 counties while Moderate Confidence was seen in 10 counties. Then I check High Uncertainty Counties and Identifed the 5 counties with the highest MOE percentages by using formula top_5_cont <- head(MOE[order(-MOE$moe_percentage), ], 5). Then I selected specific columns as per requirment by using selected_data <- select(top_5_cont, NAME, median_household_incomeE, median_household_incomeM, moe_percentage, reliability) formula. Data shows that Forest County, Pennsylvania is on firt while Elk County, Pennsylvania is on fifth number as per MOE Then I made Counties with Highest Income Data Uncertainty table by using kable.
+In Part 3 we moved to Neighborhood-Level Analysis. We Selected 2 counties from our reliability analysis for detailed tract-level study i.e Forest County, Pennsylvania
+ and Sullivan County, Pennsylvania by using formula selected_counties <- filter(MOE, moe_percentage > 8). and stored the selected counties in a variable called selected_counties as per requirement. Showed the county name, median income, MOE percentage, reliability category in table. Next we moved to Tract-Level Demographics by using Geography: tract level - Variables: white alone (B03002_003), Black/African American (B03002_004), Hispanic/Latino (B03002_012), total population (B03002_001). We took same state = "PA" and year = 2022. It gave population of all three races and then we calculated MOE percentage as white_percentage, black_percentage, Hispanic_Latino_percentage. then We moved to Demographic Analysis where we analyzed the demographic patterns in tracts of PA. we analyzed that "Census Tract 195.02; Philadelphia County; Pennsylvania" is with the highest percentage of Hispanic/Latino residents. we used the arrange() and slice() to get the top tract. then we Calculated average demographics by county using group_by() and summarize() functions. "Census Tract 195.02; Philadelphia County; Pennsylvania" is with highest average demographic. Then we showed average percentage for each racial/ethnic group. Then we made a table of it as per requirement. with table deading as Counties with Ethnicities/races.
+ In part 4 we did Comprehensive Data Quality Evaluation and evaluated margins of error for demographic variables to see if some communities have less reliable data. we saw High Confidence  in 1897 counties, Moderate in 1453 and Low Confidence in 96 counties. So in a nutshell few counties have low Confidence i.e 96. we Created summary statistics showing how many tracts have data quality issues. A new table which shows on 96 counties with low Confidence is created. In Pattern Analysis we checked whether data quality problems are randomly distributed or concentrated in certain types of communities. We calculated Calculate average characteristics for each group like High Confidence Average_MOE is 227.6663, Low Confidence Average_MOE is 1,247.5833	and Moderate Confidence Average_MOE is 575.8121. and then created a table with heading "table showing the patterns"]
 
 ## 6.3 Specific Recommendations
 
 **Your Task:** Create a decision framework for algorithm implementation.
 
 ```{r recommendations-data}
+
 # Create a summary table using your county reliability data
 # Include: county name, median income, MOE percentage, reliability category
 
@@ -449,38 +455,95 @@ head(II)
 # - Low Confidence: "Requires manual review or additional data"
 
 # Format as a professional table with kable()
+
+
+JJ <- get_acs(
+  geography = "tract",
+  variables = c(
+    white_alone = "B03002_003",
+    Black_African_American = "B03002_004",
+    Hispanic_Latino = "B03002_012",
+    total_population = "B03002_001",
+    median_household_income = "B19013_001"
+  ),
+  state = "PA",
+  year = 2022,
+  output = "wide"  # Makes analysis easier
+)
+View (JJ)
+head(JJ)
+
+BOOK <- JJ %>%
+  mutate(
+    white_percentage = round((white_aloneE / total_populationE) * 100, 2),
+    black_percentage = round((Black_African_AmericanE / total_populationE) * 100, 2),
+    Hispanic_Latino_percentage = round((Hispanic_LatinoE / total_populationE) * 100, 2)
+    )
+
+View(BOOK)
+head(BOOK)
+
+
+OO <- BOOK %>%
+      mutate(
+      # Create reliability categories
+         reliability = case_when(
+         total_populationM < 400 ~ "High Confidence",
+         total_populationM >= 400 & total_populationM <= 1000 ~ "Moderate",
+         total_populationM > 1000 ~ "Low Confidence"))
+
+count(OO, reliability)
+View(OO)
+head(OO)
+
+UU <- OO %>%
+  mutate(
+    recommendations = case_when(
+    total_populationM < 400 ~ "Safe for algorithmic decisions",
+    total_populationM >= 400 & total_populationM <= 1000 ~ "use with caution - monitor outcomes",
+    total_populationM > 1000 ~ "Requires manual review or additional data")) 
+
+kable(UU,
+      col.names = c("GEOID", "NAME", "white_aloneE", "white_aloneM", "Black_African_AmericanE", "Black_African_AmericanM", "Hispanic_LatinoE", "Hispanic_LatinoM", "total_populationE", "total_populationM", "median_household_incomeE", "median_household_incomeM", "white_percentage", "black_percentage", "Hispanic_Latino_percentage", "reliability", "recommendations"),
+      caption = "Algorithm recommendations",
+      format.args = list(big.mark = ","))
+head(UU)
+
 ```
 
 **Key Recommendations:**
 
-**Your Task:** Use your analysis results to provide specific guidance to the department.
+**Your Task:** My data tables are almost enough and self descriptive even though I am giving my recommendations here.
 
-1. **Counties suitable for immediate algorithmic implementation:** [List counties with high confidence data and explain why they're appropriate]
+1. **Counties suitable for immediate algorithmic implementation:** [Census Tract 9809; Allegheny County; Pennsylvania and Census Tract 369.01; Philadelphia County; Pennsylvania etc. are counties with high confidence data and due to less MOE these are appropriate for immediate algorithmic implementation]
 
-2. **Counties requiring additional oversight:** [List counties with moderate confidence data and describe what kind of monitoring would be needed]
+2. **Counties requiring additional oversight:** [Census Tract 9506.07; Pike County; Pennsylvania and 
+Census Tract 4101.01; Delaware County; Pennsylvania
+ are counties with moderate confidence data and nominal monitoring would be needed]
 
-3. **Counties needing alternative approaches:** [List counties with low confidence data and suggest specific alternatives - manual review, additional surveys, etc.]
+3. **Counties needing alternative approaches:** [counties with low confidence data are "Census Tract 118.07; Lancaster County; Pennsylvania" and "Census Tract 112; Northampton County; Pennsylvania" definitely manual review and additional surveys are required]
 
 ## Questions for Further Investigation
 
-[List 2-3 questions that your analysis raised that you'd like to explore further in future assignments. Consider questions about spatial patterns, time trends, or other demographic factors.]
+[First of all why margin of errors are quite high in certain counties of PA?
+Secondly why centain races like white has less margin of errors as compared to other races?.]
 
 # Technical Notes
 
 **Data Sources:** 
 - U.S. Census Bureau, American Community Survey 2018-2022 5-Year Estimates
-- Retrieved via tidycensus R package on [date]
+- Retrieved via tidycensus R package on [08-02-2026]
 
 **Reproducibility:** 
-- All analysis conducted in R version [your version]
-- Census API key required for replication
-- Complete code and documentation available at: [your portfolio URL]
+- All analysis conducted in R version [version = 4.5.2]
+- API key is 6aed1d36d4815735d6d1b877f7ec2dda1282856b
+- Complete code and documentation available at: [https://umairbinsaad.github.io/lab_1/lab1_template%20(1).html]
 
 **Methodology Notes:**
-[Describe any decisions you made about data processing, county selection, or analytical choices that might affect reproducibility]
+[I step by step moved by taking PA as my state and then enlisted its counties and as per directions by inducing all the formulas I calculated each and everything]
 
 **Limitations:**
-[Note any limitations in your analysis - sample size issues, geographic scope, temporal factors, etc.]
+[I feel limitation is that in R big tables are difficult to comprehend and read.]
 
 ---
 
@@ -496,4 +559,4 @@ Before submitting your portfolio link on Canvas:
 - [ ] Census API key is properly set 
 - [ ] Document renders correctly to HTML
 
-**Remember:** Submit your portfolio URL on Canvas, not the file itself. Your assignment should be accessible at `your-portfolio-url/labs/lab_1/your_file_name.html`
+**Remember:** Submit your portfolio URL on Canvas, not the file itself. Your assignment should be accessible at `https://umairbinsaad.github.io/lab_1/lab1_template%20(1).html`
