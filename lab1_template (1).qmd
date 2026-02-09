@@ -193,7 +193,7 @@ kable(selected_data,
       caption = "Counties with Highest Income Data Uncertainty",
       format.args = list(big.mark = ","))
 
-
+View(selected_data)
 ```
 
 **Data Quality Commentary:**
@@ -216,7 +216,7 @@ kable(selected_data,
 
 # Show: county name, median income, MOE percentage, reliability category
 
-selected_counties <- filter(MOE, moe > 0.08)
+selected_counties <- filter(MOE, moe_percentage > 8)
 View(selected_counties)
 head(selected_counties)
 selected_counties1 <- select(top_5_cont, NAME, median_household_incomeM, moe_percentage, reliability)
@@ -265,7 +265,7 @@ View (TL)
 
 PAGES <- TL %>%
   mutate(
-    white_percentage = round((white_aloneM / total_populationM) * 100, 2))
+    white_percentage = round((white_aloneE / total_populationE) * 100, 2))
 View(PAGES)
 
 ```
