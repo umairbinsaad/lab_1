@@ -175,10 +175,11 @@ count(pa_reliability, reliability)
 
 ```{r high-uncertainty}
 # Create table of top 5 counties by MOE percentage
+# Format as table with kable() - include appropriate column names and caption
 top_5_cont <- head(pa_reliability[order(-pa_reliability$moe_percentage), ], 5)
 View (top_5_cont)
+head(top_5_cont)
 
-# Format as table with kable() - include appropriate column names and caption
 ```
 
 **Data Quality Commentary:**
