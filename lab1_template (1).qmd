@@ -148,7 +148,6 @@ head(pa_clean)
 MOE <- pa_clean %>%
   mutate(
     # Calculate MOE as percentage of estimate
-     moe = round((median_household_incomeM / median_household_incomeE) , 2),
     moe_percentage = round((median_household_incomeM / median_household_incomeE) * 100, 2),
     
     # Create reliability categories
@@ -185,12 +184,12 @@ top_5_cont <- head(MOE[order(-MOE$moe_percentage), ], 5)
 View (top_5_cont)
 head(top_5_cont)
 
-selected_data <- select(top_5_cont, NAME, median_household_incomeM, moe, moe_percentage, reliability)
+selected_data <- select(top_5_cont, NAME, median_household_incomeE, median_household_incomeM, moe_percentage, reliability)
 View(selected_data)
 head(selected_data)
 
 kable(selected_data,
-      col.names = c("NAME", "median_household_incomeM", "moe", "moe_percentage", "moe"),
+      col.names = c("NAME", "median_income", "margin_of_error", "moe_percentage", "moe"),
       caption = "Counties with Highest Income Data Uncertainty",
       format.args = list(big.mark = ","))
 
@@ -249,6 +248,26 @@ head(selected_data)
 # Create percentages for white, Black, and Hispanic populations
 
 # Add readable tract and county name columns using str_extract() or similar
+
+TL <- get_acs(
+  geography = "tract",
+  variables = c(
+    white_alone = "B03002_003",
+    Black_African_American = "B03002_004",
+    Hispanic_Latino = "B03002_012",
+    total_population = "B03002_001"
+  ),
+  state = "PA",
+  year = 2022,
+  output = "wide"  # Makes analysis easier
+)
+View (TL)
+
+PAGES <- TL %>%
+  mutate(
+    white_percentage = round((white_aloneM / total_populationM) * 100, 2))
+View(PAGES)
+
 ```
 
 ## 3.3 Demographic Analysis
