@@ -322,7 +322,7 @@ head(PP)
 
 kable(PP,
       col.names = c("NAME", "average_demographics_Hispanic_Latino", "average_demographics_white", "average_demographics_black"),
-      caption = "Counties with Highest Income Data Uncertainty",
+      caption = "Counties with Ethnicities/races",
       format.args = list(big.mark = ","))
 
 
@@ -341,12 +341,46 @@ kable(PP,
 
 ```{r demographic-moe}
 # Calculate MOE percentages for white, Black, and Hispanic variables
+
 # Hint: use the same formula as before (margin/estimate * 100)
 
+
+PAGES <- TL %>%
+  mutate(
+    white_percentage = round((white_aloneE / total_populationE) * 100, 2),
+    black_percentage = round((Black_African_AmericanE / total_populationE) * 100, 2),
+    Hispanic_Latino_percentage = round((Hispanic_LatinoE / total_populationE) * 100, 2)
+    )
+
+View(PAGES)
+head(PAGES)
 # Create a flag for tracts with high MOE on any demographic variable
+
+flag_t <- arrange(PAGES, desc(total_populationM))
+view(flag_t)
+
+
+PPPP <- PAGES %>%
+      mutate(
+      # Create reliability categories
+         reliability = case_when(
+         total_populationM < 400 ~ "High Confidence",
+         total_populationM >= 400 & total_populationM <= 1000 ~ "Moderate",
+         total_populationM > 1000 ~ "Low Confidence"))
+
+count(PPPP, reliability)
+View(PPPP)
+head(PPPP)
+
 # Use logical operators (| for OR) in an ifelse() statement
 
 # Create summary statistics showing how many tracts have data quality issues
+
+YY <- filter(PPPP, total_populationM > 1000)
+View(YY)
+head(YY)
+
+
 ```
 
 ## 4.2 Pattern Analysis
@@ -355,11 +389,31 @@ kable(PP,
 
 ```{r pattern-analysis}
 # Group tracts by whether they have high MOE issues
+
 # Calculate average characteristics for each group:
 # - population size, demographic percentages
-
 # Use group_by() and summarize() to create this comparison
 # Create a professional table showing the patterns
+
+II <- PPPP %>%
+  group_by(reliability)%>%
+  summarise(
+    Average_MOE = mean(total_populationM, na.rm = TRUE),
+    Avg_population_size = mean(total_populationE, na.rm = TRUE),
+    .groups = 'drop')
+
+kable(II,
+      col.names = c("reliability", "Average_MOE", "Avg_population_size"),
+      caption = "table showing the patterns",
+      format.args = list(big.mark = ","))
+
+View(II)
+head(II)
+
+
+
+
+
 ```
 
 **Pattern Analysis:** [Describe any patterns you observe. Do certain types of communities have less reliable data? What might explain this?]
